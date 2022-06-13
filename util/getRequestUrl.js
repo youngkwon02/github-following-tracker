@@ -1,4 +1,4 @@
-const getRequestUrl = (host, path, qsObject) => {
+const getRequestUrl = (host, path, queryStringObject) => {
   let url = `${host}${path}`;
   if (Object.keys(queryStringObject).length) {
     url += "?";
