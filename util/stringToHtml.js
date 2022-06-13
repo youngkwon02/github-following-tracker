@@ -1,7 +1,8 @@
-const stringToHtml = (str) => {
-  let parser = new DOMParser();
-  let doc = parser.parseFromString(str, "text/html");
-  return doc.body;
+const jsdom = require("jsdom");
+
+const stringToHtml = (xmlString) => {
+  const dom = new jsdom.JSDOM(xmlString);
+  return dom;
 };
 
 module.exports = {
