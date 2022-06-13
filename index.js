@@ -1,53 +1,96 @@
+const { fetchGET } = require("./util/fetchGET");
 const { getRequestUrl } = require("./util/getRequestUrl");
 const { githubHost } = require("./util/githubHost");
 const { pageType } = require("./util/pageType");
 const { stringToHtml } = require("./util/stringToHtml");
-const axios = require("axios");
 const prompt = require("prompt-sync")({ sigint: true });
 
-// Step 1
-// For each page both of followers and following
-// *******
-// const lst = document.querySelectorAll(".d-table-cell .Link--secondary");
+const getFollowers = async (gitHost) => {
+  let followers = [];
 
-// let str = "";
-// lst.forEach((f) => {
-//   str += f.innerText + "/";
-// });
+  for (let page = 1; ; page++) {
+    const requestUrl = getRequestUrl(gitHost, "", {
+      page,
+      tab: pageType.FOLLOWERS,
+    });
 
-// console.log(str);
+    let res = await fetchGET(requestUrl);
+    const jsDomRes = stringToHtml(res.data);
 
-const fetchGET = async (reqUrl) => {
-  try {
-    return await axios.get(reqUrl);
-  } catch (error) {
-    console.error(error);
+    const tagElements = jsDomRes.window.document.querySelectorAll(
+      ".d-table-cell .Link--secondary"
+    );
+
+    if (!tagElements.length) {
+      break;
+    }
+    tagElements.forEach((n) => followers.push(n.textContent));
   }
+  return followers;
 };
 
-const crawling = async () => {
-  // const githubName = prompt("What is your GitHub name? ");
-  const githubName = "youngkwon02";
-  const GITHUB_HOST = githubHost(githubName);
-  let follwingList = [];
-  let follwerList = [];
+const getFollowing = async (gitHost) => {
+  let followings = [];
 
-  const requestUrl = getRequestUrl(GITHUB_HOST, "", {
-    page: 1,
-    tab: pageType.FOLLOWING,
+  for (let page = 1; ; page++) {
+    const requestUrl = getRequestUrl(gitHost, "", {
+      page,
+      tab: pageType.FOLLOWING,
+    });
+
+    let res = await fetchGET(requestUrl);
+    const jsDomRes = stringToHtml(res.data);
+
+    const tagElements = jsDomRes.window.document.querySelectorAll(
+      ".d-table-cell .Link--secondary"
+    );
+
+    if (!tagElements.length) {
+      break;
+    }
+    tagElements.forEach((n) => followings.push(n.textContent));
+  }
+
+  return followings;
+};
+
+const printResult = (followers, followings) => {
+  const only = {
+    followingOnly: [],
+    followerOnly: [],
+  };
+
+  followings.forEach((f) => {
+    if (!followers.includes(f)) {
+      only.followingOnly.push(f);
+    }
   });
 
-  let res = await fetchGET(requestUrl);
-  const jsDomRes = stringToHtml(res.data);
+  followers.forEach((f) => {
+    if (!followings.includes(f)) {
+      only.followerOnly.push(f);
+    }
+  });
 
-  const nameTagList = jsDomRes.window.document.querySelectorAll(
-    ".d-table-cell .Link--secondary"
-  );
-
-  console.log(nameTagList);
-
-  nameTagList.forEach((n) => follwingList.push(n.textContent));
-  console.log(follwingList);
+  console.log("--------------------------------------------------------");
+  console.log(`Total Followers : ${followers.length}`);
+  console.log(`Total Followings : ${followings.length}`);
+  console.log("--------------------------------------------------------");
+  console.log(`Only you follow : ${only.followingOnly.length}`);
+  only.followingOnly.forEach((f) => console.log(f));
+  console.log("--------------------------------------------------------");
+  console.log(`Only someone follows : ${only.followerOnly.length}`);
+  only.followerOnly.forEach((f) => console.log(f));
+  console.log("--------------------------------------------------------");
 };
 
-crawling();
+const crawlAll = async () => {
+  const name = prompt("What is your GitHub name? ");
+  const host = githubHost(name);
+
+  const followers = await getFollowers(host);
+  const followings = await getFollowing(host);
+  printResult(followers, followings);
+};
+
+crawlAll();
