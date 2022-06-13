@@ -4,7 +4,7 @@ const fetchGET = async (reqUrl) => {
   try {
     return await axios.get(reqUrl);
   } catch (error) {
-    console.error(error);
+    // console.error(error);
   }
 };
 

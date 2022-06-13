@@ -88,9 +88,15 @@ const crawlAll = async () => {
   const name = prompt("What is your GitHub name? ");
   const host = githubHost(name);
 
-  const followers = await getFollowers(host);
-  const followings = await getFollowing(host);
-  printResult(followers, followings);
+  try {
+    const followers = await getFollowers(host);
+    const followings = await getFollowing(host);
+    printResult(followers, followings);
+  } catch (e) {
+    console.log(
+      "존재하지 않는 GitHub name이거나 Tracking 불가능한 계정입니다."
+    );
+  }
 };
 
 crawlAll();
