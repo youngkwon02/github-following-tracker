@@ -61,15 +61,11 @@ const printResult = (followers, followings) => {
   };
 
   followings.forEach((f) => {
-    if (!followers.includes(f)) {
-      only.followingOnly.push(f);
-    }
+    !followers.includes(f) ? only.followingOnly.push(f) : false;
   });
 
   followers.forEach((f) => {
-    if (!followings.includes(f)) {
-      only.followerOnly.push(f);
-    }
+    !followings.includes(f) ? only.followerOnly.push(f) : false;
   });
 
   console.log("--------------------------------------------------------");
