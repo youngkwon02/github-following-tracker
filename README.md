@@ -13,6 +13,7 @@ GitHub following, followers, only-following, only-follower tracker
 
 <br>
 
+### Sample Interface (Not Ready Yet)
 <img width='1100px' src="https://user-images.githubusercontent.com/39653584/184080697-c36556c8-89dc-4cce-8f57-6f1adc83db2f.png">
 
 ---
